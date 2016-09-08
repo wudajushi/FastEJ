@@ -4,6 +4,7 @@ import org.wuda.fastej.core.EJReadExcelException;
 import org.wuda.fastej.core.ExcelRawData;
 import org.wuda.fastej.annotation.ExcelType;
 import org.wuda.fastej.util.Assert;
+import org.wuda.fastej.util.POIWidthUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -74,7 +75,7 @@ public class ExcelRawDataReader {
             for(int i = 0; i < cellCount; ++i) {
                 Cell cell = header.getCell(i);
                 int index = cell.getColumnIndex();
-                String value = getFormatCellValue(cell);
+                String value = POIWidthUtils.getFormatCellValue(cell);
                 headerMap.put(index, value);
             }
             for(int i : sheetIdxs) {
@@ -93,7 +94,7 @@ public class ExcelRawDataReader {
                     int rowItemCellCount = rowItem.getPhysicalNumberOfCells();
                     Map<String, String> rowDatas = new HashMap<String, String>();
                     for(int k = 0; j < rowItemCellCount; ++k) {
-                        rowDatas.put(headerMap.get(k), getFormatCellValue(rowItem.getCell(k)));
+                        rowDatas.put(headerMap.get(k), POIWidthUtils.getFormatCellValue(rowItem.getCell(k)));
                     }
                     datas.add(rowDatas);
                 }
@@ -127,30 +128,5 @@ public class ExcelRawDataReader {
         }
     }
 
-    /**
-     * Gets format cell value.
-     *
-     * @param cell the cell
-     * @return the format cell value
-     * @author :<a href="mailto:450783043@qq.com">悟达</a>
-     * @date :2016-07-22 17:42:28
-     */
-    private static String getFormatCellValue(Cell cell) {
-        if(cell == null) {
-            return StringUtils.EMPTY;
-        }
-        switch(cell.getCellType()) {
-            case Cell.CELL_TYPE_BLANK:
-                return StringUtils.EMPTY;
-            case Cell.CELL_TYPE_BOOLEAN:
-                return String.valueOf(cell.getBooleanCellValue());
-            case Cell.CELL_TYPE_NUMERIC:
-                return String.valueOf(cell.getNumericCellValue());
-            case Cell.CELL_TYPE_STRING:
-                return cell.getStringCellValue();
-            default:
-                logger.info("Does not support Cell type[" + cell.getCellType() + "] yet.");
-                return StringUtils.EMPTY;
-        }
-    }
+
 }

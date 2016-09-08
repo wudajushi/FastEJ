@@ -339,6 +339,21 @@ public class ExcelXSSFSaxReader {
         private SharedStringsTable sst;
 
         /**
+         * The This column.
+         *
+         * @author :<a href="mailto:450783043@qq.com">悟达</a>
+         * @date :2016-09-06 18:48:03
+         */
+        private int thisColumn = -1;
+        /**
+         * The Last column.
+         *
+         * @author :<a href="mailto:450783043@qq.com">悟达</a>
+         * @date :2016-09-06 18:48:03
+         */
+        private int preColumn = -1;
+
+        /**
          * Instantiates a new Excel xssf sax handler.
          *
          * @param sst the sst
@@ -348,10 +363,18 @@ public class ExcelXSSFSaxReader {
         }
 
         @Override
-        public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
+        public void startElement(String uri, String localName, String qName, Attributes attributes) throws
+                SAXException {
             super.startElement(uri, localName, qName, attributes);
             if("c".equals(qName)) {
                 String cellType = attributes.getValue("t");
+                String ref = attributes.getValue("r");
+                if(preColumn == -1) {
+                    preColumn = nameToColumn(ref.replaceAll("\\d+", ""));
+                } else {
+                    preColumn = thisColumn;
+                }
+                thisColumn = nameToColumn(ref.replaceAll("\\d+", ""));
                 nextIsString = "s".equals(cellType);
                 String dateType = attributes.getValue("s");
                 dataFlag = "1".equals(dateType);
@@ -369,6 +392,13 @@ public class ExcelXSSFSaxReader {
             }
             if("v".equals(qName)) {
                 String value = lastContents.trim();
+                int distance = thisColumn - preColumn - 1;
+                if(distance > 0) {
+                    for(int i = 0; i < distance; ++i) {
+                        cellValues.add(colIndex + i, "");
+                    }
+                    colIndex += distance;
+                }
                 cellValues.add(colIndex, value);
                 ++colIndex;
             } else if("row".equals(qName)) {
@@ -377,6 +407,8 @@ public class ExcelXSSFSaxReader {
                 }
                 ++rowIndex;
                 colIndex = 0;
+                thisColumn = -1;
+                preColumn = -1;
                 cellValues.clear();
             }
 
@@ -395,6 +427,50 @@ public class ExcelXSSFSaxReader {
             if(saxRowProcessor != null) {
                 saxRowProcessor.processDocumentEnd();
             }
+        }
+
+        /**
+         * Count null cell int.
+         *
+         * @param name the name
+         * @return the int
+         * @author :<a href="mailto:450783043@qq.com">悟达</a>
+         * @date :2016-09-06 18:31:07
+         */
+        private int nameToColumn(String name) {
+            int column = -1;
+            for(int i = 0; i < name.length(); ++i) {
+                int c = name.charAt(i);
+                column = (column + 1) * 26 + c - 'A';
+            }
+            return column;
+        }
+
+        /**
+         * Fill char string.
+         *
+         * @param str   the str
+         * @param len   the len
+         * @param let   the let
+         * @param isPre the is pre
+         * @return the string
+         * @author :<a href="mailto:450783043@qq.com">悟达</a>
+         * @date :2016-09-06 18:31:07
+         */
+        private String fillChar(String str, int len, char let, boolean isPre) {
+            int len_1 = str.length();
+            if(len_1 < len) {
+                if(isPre) {
+                    for(int i = 0; i < (len - len_1); i++) {
+                        str = let + str;
+                    }
+                } else {
+                    for(int i = 0; i < (len - len_1); i++) {
+                        str = str + let;
+                    }
+                }
+            }
+            return str;
         }
     }
 }

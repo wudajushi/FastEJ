@@ -3,6 +3,8 @@ package org.wuda.fastej.serializer;
 import org.wuda.fastej.annotation.ExcelType;
 import org.wuda.fastej.core.*;
 import org.wuda.fastej.util.Assert;
+import org.wuda.fastej.util.CollectionUtils;
+import org.wuda.fastej.util.POIWidthUtils;
 import ognl.Ognl;
 import ognl.OgnlException;
 import org.apache.commons.lang3.ArrayUtils;
@@ -11,12 +13,12 @@ import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.ss.util.RegionUtil;
-import org.apache.poi.xssf.streaming.SXSSFSheet;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -55,13 +57,27 @@ public class JavaBeanSerializer implements BeanSerializer {
         Assert.notEmpty(fieldInfos, "FieldInfos must not be empty !");
         ExcelType outputType = excelClassInfo.getOutputType();
         boolean isUseSXSSF = beanList.size() > 1000;
-        Workbook workbook = outputType == ExcelType.XSSF ? isUseSXSSF ? new SXSSFWorkbook() : new XSSFWorkbook() :
+        Workbook workbook = outputType == ExcelType.XSSF ? isUseSXSSF ? new SXSSFWorkbook(-1) : new XSSFWorkbook() :
                 new HSSFWorkbook();
         Sheet[] sheets = createSheets(workbook, configuration, beanList.size());
         Map<Integer, Map<Integer, String>> ognlSheetMap = generateHeader(sheets, excelClassInfo, deepestLevel,
                 configuration);
-        generateDatas(beanList, sheets, ognlSheetMap, configuration, deepestLevel + 1);
+        Map<Integer, String> datePatternMap = determineColDatePattern(excelClassInfo);
+        generateDatas(beanList, sheets, ognlSheetMap, datePatternMap, configuration, deepestLevel + 1);
         return workbook;
+    }
+
+    private Map<Integer, String> determineColDatePattern(ExcelClassInfo classInfo) {
+        if(classInfo == null || CollectionUtils.isEmpty(classInfo.getFieldInfo())) {
+            return null;
+        }
+        int i = 0;
+        Map<Integer, String> resultMap = new HashMap<Integer, String>();
+        for(ExcelBaseFieldInfo fieldInfo : classInfo.getFieldInfo().values()) {
+            resultMap.put(i++, fieldInfo.getDatePattern());
+        }
+        System.out.println(resultMap);
+        return resultMap;
     }
 
     /**
@@ -77,7 +93,8 @@ public class JavaBeanSerializer implements BeanSerializer {
      * @date :2016-08-04 17:25:01
      */
     private <T> void generateDatas(List<T> beanList, Sheet[] sheets, Map<Integer, Map<Integer, String>> ognlSheetMap,
-                                   ExportConfiguration configuration, int dataStartRow) {
+                                   Map<Integer, String> datePatternMap, ExportConfiguration configuration, int
+                                           dataStartRow) {
         Assert.notEmpty(beanList, "beanList must not be empty !");
         Assert.notEmpty(sheets, "sheets must not be empty !");
         Assert.notEmpty(ognlSheetMap, "ognlSheetMap must not be empty !");
@@ -86,23 +103,27 @@ public class JavaBeanSerializer implements BeanSerializer {
         int oneSheetMaxNum = configuration.getOneSheetMaxNum();
         int beanSize = beanList.size();
         if(beanSize <= oneSheetMaxNum) {
-            generateOneSheetDatas(beanList, sheets[0], ognlSheetMap.get(0), dataStartRow, configuration);
-            for(int i = 0; i < sheets[0].rowIterator().next().getPhysicalNumberOfCells(); ++i) {
-                if(sheets[0] instanceof SXSSFSheet){
-                    ((SXSSFSheet)sheets[0]).trackAllColumnsForAutoSizing();
-                }
-                sheets[0].autoSizeColumn(i, true);
-            }
+            generateOneSheetDatas(beanList, sheets[0], ognlSheetMap.get(0), datePatternMap, dataStartRow,
+                    configuration);
+            POIWidthUtils.autoSizeWidth(sheets[0]);
+//            for(int i = 0; i < sheets[0].rowIterator().next().getPhysicalNumberOfCells(); ++i) {
+//                if(sheets[0] instanceof SXSSFSheet){
+//                    ((SXSSFSheet)sheets[0]).trackAllColumnsForAutoSizing();
+//                }
+//                sheets[0].autoSizeColumn(i, true);
+//            }
         } else {
             for(int i = 0; i < sheets.length; ++i) {
                 List<T> subList = beanList.subList(i * oneSheetMaxNum, (i + 1) * oneSheetMaxNum);
-                generateOneSheetDatas(subList, sheets[i], ognlSheetMap.get(i), dataStartRow, configuration);
-                for(int j = 0; j < sheets[i].rowIterator().next().getPhysicalNumberOfCells(); ++j) {
-                    if(sheets[0] instanceof SXSSFSheet){
-                        ((SXSSFSheet)sheets[i]).trackAllColumnsForAutoSizing();
-                    }
-                    sheets[i].autoSizeColumn(j, true);
-                }
+                generateOneSheetDatas(subList, sheets[i], ognlSheetMap.get(i), datePatternMap, dataStartRow,
+                        configuration);
+                POIWidthUtils.autoSizeWidth(sheets[i]);
+//                for(int j = 0; j < sheets[i].rowIterator().next().getPhysicalNumberOfCells(); ++j) {
+//                    if(sheets[0] instanceof SXSSFSheet){
+//                        ((SXSSFSheet)sheets[i]).trackAllColumnsForAutoSizing();
+//                    }
+//                    sheets[i].autoSizeColumn(j, true);
+//                }
             }
         }
     }
@@ -118,12 +139,14 @@ public class JavaBeanSerializer implements BeanSerializer {
      * @author :<a href="mailto:450783043@qq.com">悟达</a>
      * @date :2016-08-04 17:25:01
      */
-    private <T> void generateOneSheetDatas(List<T> beanList, Sheet oneSheet, Map<Integer, String> ognlMap, int
-            dataStartRow, ExportConfiguration configuration) {
+    private <T> void generateOneSheetDatas(List<T> beanList, Sheet oneSheet, Map<Integer, String> ognlMap,
+                                           Map<Integer, String> datePatternMap, int dataStartRow, ExportConfiguration
+                                                   configuration) {
         Assert.notEmpty(beanList, "beanList must not be empty !");
         Assert.notNull(oneSheet, "Sheet must not be empty !");
         Assert.notEmpty(ognlMap, "ognlMap must not be empty");
         Assert.isTrue(dataStartRow > 0, "dataStartRow must not be negative ! ");
+        System.out.println(ognlMap);
         int rowIndex = dataStartRow;
         CellStyle cellStyle;
         if(configuration != null && configuration.getCellStyleCreator() != null) {
@@ -143,6 +166,9 @@ public class JavaBeanSerializer implements BeanSerializer {
                     Object value = Ognl.getValue(ognlExpression, bean);
                     if(value == null) {
                         cell.setCellValue(StringUtils.EMPTY);
+                    } else if(value instanceof Date) {
+                        cell.setCellValue(typeConverter.convertDateToString((Date) value, datePatternMap.get
+                                (colIndex)));
                     } else {
                         cell.setCellValue(typeConverter.convert(value, String.class));
                     }

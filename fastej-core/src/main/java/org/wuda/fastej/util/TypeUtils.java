@@ -1,6 +1,7 @@
 package org.wuda.fastej.util;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -51,6 +52,7 @@ public class TypeUtils {
         boxedPrimitiveClasses.add(Character.class);
         frequenlyBaseClasses.add(CharSequence.class);
         frequenlyBaseClasses.add(Number.class);
+        frequenlyBaseClasses.add(Date.class);
     }
 
     /**
@@ -66,7 +68,10 @@ public class TypeUtils {
         boolean isPrimitive = primitiveClasses.contains(fieldClass) || boxedPrimitiveClasses.contains(fieldClass);
         if(!isPrimitive) {
             for(Class<?> classItem : frequenlyBaseClasses) {
-                return classItem.isAssignableFrom(fieldClass);
+                boolean flag =  classItem.isAssignableFrom(fieldClass);
+                if(flag){
+                    return flag;
+                }
             }
         }
         return isPrimitive;

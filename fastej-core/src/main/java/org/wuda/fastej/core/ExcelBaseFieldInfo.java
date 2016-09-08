@@ -67,6 +67,22 @@ public class ExcelBaseFieldInfo implements Comparable<ExcelBaseFieldInfo> {
     private final boolean isMixed;
 
     /**
+     * The Is getter.
+     *
+     * @author :<a href="mailto:450783043@qq.com">悟达</a>
+     * @date :2016-09-06 15:52:11
+     */
+    private final boolean isGetter;
+
+    /**
+     * The Date pattern.
+     *
+     * @author :<a href="mailto:450783043@qq.com">悟达</a>
+     * @date :2016-09-07 10:21:27
+     */
+    private final String datePattern;
+
+    /**
      * Instantiates a new Excel base field info.
      *
      * @param fieldClass         the field class
@@ -76,9 +92,12 @@ public class ExcelBaseFieldInfo implements Comparable<ExcelBaseFieldInfo> {
      * @param childFieldsInfo    the child fields info
      * @param fieldNameKeyFields the field name key fields
      * @param isMixed            the is mixed
+     * @param isGetter           the is getter
+     * @param datePattern        the date pattern
      */
     public ExcelBaseFieldInfo(Class<?> fieldClass, String fieldName, String columnName, int index, Map<String,
-            ExcelBaseFieldInfo> childFieldsInfo, Map<String, ExcelBaseFieldInfo> fieldNameKeyFields, boolean isMixed) {
+            ExcelBaseFieldInfo> childFieldsInfo, Map<String, ExcelBaseFieldInfo> fieldNameKeyFields, boolean isMixed,
+                              boolean isGetter, String datePattern) {
         this.fieldClass = fieldClass;
         this.fieldName = fieldName;
         this.columnName = columnName;
@@ -86,7 +105,21 @@ public class ExcelBaseFieldInfo implements Comparable<ExcelBaseFieldInfo> {
         this.childFieldsInfo = childFieldsInfo;
         this.fieldNameKeyFields = fieldNameKeyFields;
         this.isMixed = isMixed;
+        this.isGetter = isGetter;
+        this.datePattern = datePattern;
     }
+
+    /**
+     * Gets date pattern.
+     *
+     * @return the date pattern
+     * @author :<a href="mailto:450783043@qq.com">悟达</a>
+     * @date :2016-09-07 10:21:41
+     */
+    public String getDatePattern() {
+        return datePattern;
+    }
+
 
     /**
      * Gets child fields info.
@@ -165,17 +198,31 @@ public class ExcelBaseFieldInfo implements Comparable<ExcelBaseFieldInfo> {
         return isMixed;
     }
 
+    /**
+     * Is getter boolean.
+     *
+     * @return the boolean
+     * @author :<a href="mailto:450783043@qq.com">悟达</a>
+     * @date :2016-09-06 15:52:35
+     */
+    public boolean isGetter() {
+        return isGetter;
+    }
+
     @Override
     public boolean equals(Object o) {
         if(this == o) return true;
         if(o == null || getClass() != o.getClass()) return false;
 
-        ExcelBaseFieldInfo that = (ExcelBaseFieldInfo) o;
+        ExcelBaseFieldInfo fieldInfo = (ExcelBaseFieldInfo) o;
 
-        if(index != that.index) return false;
-        if(!fieldName.equals(that.fieldName)) return false;
-        if(!columnName.equals(that.columnName)) return false;
-        return fieldClass.equals(that.fieldClass);
+        if(index != fieldInfo.index) return false;
+        if(isMixed != fieldInfo.isMixed) return false;
+        if(isGetter != fieldInfo.isGetter) return false;
+        if(!fieldName.equals(fieldInfo.fieldName)) return false;
+        if(!columnName.equals(fieldInfo.columnName)) return false;
+        if(!fieldClass.equals(fieldInfo.fieldClass)) return false;
+        return !(datePattern != null ? !datePattern.equals(fieldInfo.datePattern) : fieldInfo.datePattern != null);
 
     }
 
@@ -185,6 +232,9 @@ public class ExcelBaseFieldInfo implements Comparable<ExcelBaseFieldInfo> {
         result = 31 * result + columnName.hashCode();
         result = 31 * result + index;
         result = 31 * result + fieldClass.hashCode();
+        result = 31 * result + (isMixed ? 1 : 0);
+        result = 31 * result + (isGetter ? 1 : 0);
+        result = 31 * result + (datePattern != null ? datePattern.hashCode() : 0);
         return result;
     }
 
@@ -201,6 +251,7 @@ public class ExcelBaseFieldInfo implements Comparable<ExcelBaseFieldInfo> {
 
     /**
      * 获取当前字段或bean平摊开所占的列数
+     *
      * @return the int
      * @author :<a href="mailto:450783043@qq.com">悟达</a>
      * @date :2016-08-03 14:52:09
@@ -211,6 +262,7 @@ public class ExcelBaseFieldInfo implements Comparable<ExcelBaseFieldInfo> {
 
     /**
      * 递归计算当前bean平摊开后所占的列数
+     *
      * @param fieldInfo the field info
      * @return the int
      * @author :<a href="mailto:450783043@qq.com">悟达</a>
@@ -242,6 +294,8 @@ public class ExcelBaseFieldInfo implements Comparable<ExcelBaseFieldInfo> {
                 ", fieldClass=" + fieldClass +
                 ", fieldNameKeyFields=" + fieldNameKeyFields +
                 ", isMixed=" + isMixed +
+                ", isGetter=" + isGetter +
+                ", datePattern='" + datePattern + '\'' +
                 '}';
     }
 }

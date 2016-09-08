@@ -4,11 +4,14 @@ package org.wuda.fastej.core;
 import org.wuda.fastej.util.Assert;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
+import org.apache.commons.lang3.time.FastDateFormat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /**
  * The type Default type converter.
@@ -31,6 +34,8 @@ public class DefaultTypeConverter implements TypeConverter {
      * @date :2016-07-22 17:41:54
      */
     public static final DefaultTypeConverter INSTANCE = new DefaultTypeConverter();
+
+    public static final FastDateFormat DEFAULT_DATE_FORMAT = FastDateFormat.getInstance("yyyy-MM-dd HH:mm:ss");
 
     public <T> T convert(Object value, Class<T> valueClass) {
         if(value == null) {
@@ -95,6 +100,18 @@ public class DefaultTypeConverter implements TypeConverter {
             return 0.0D;
         }
         return Double.parseDouble(String.valueOf(value));
+    }
+
+    public String convertDateToString(Date date, String pattern) {
+        if(date == null) {
+            return StringUtils.EMPTY;
+        }
+        try {
+            return new SimpleDateFormat(pattern).format(date);
+        } catch(IllegalArgumentException e) {
+            logger.error("pattern[{}] is illegal!,use default pattern yyyy-MM-dd HH:mm:ss", pattern, e);
+            return DEFAULT_DATE_FORMAT.format(date);
+        }
     }
 
     /**
@@ -176,6 +193,13 @@ public class DefaultTypeConverter implements TypeConverter {
         return null;
     }
 
+    /**
+     * The entry point of application.
+     *
+     * @param args the input arguments
+     * @author :<a href="mailto:450783043@qq.com">悟达</a>
+     * @date :2016-09-07 10:33:24
+     */
     public static void main(String[] args) {
         System.out.println(new DefaultTypeConverter().convert("111", int.class).getClass());
     }

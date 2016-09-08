@@ -11,7 +11,7 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
 @Documented
-@Target(ElementType.FIELD)
+@Target({ElementType.FIELD, ElementType.METHOD})
 public @interface ExcelField {
     /**
      * Index int.
@@ -31,4 +31,21 @@ public @interface ExcelField {
      */
     String columnName();
 
+    /**
+     * Is getter boolean.
+     *
+     * @return the boolean
+     * @author :<a href="mailto:450783043@qq.com">悟达</a>
+     * @date :2016-09-06 16:03:18
+     */
+    boolean isGetter() default false;
+
+    /**
+     * Date pattern string.
+     *
+     * @return the string
+     * @author :<a href="mailto:450783043@qq.com">悟达</a>
+     * @date :2016-09-07 10:20:38
+     */
+    String datePattern() default "yyyy-MM-dd HH:mm:ss";
 }

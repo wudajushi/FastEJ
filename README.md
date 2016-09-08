@@ -16,7 +16,8 @@
 * `ExcelBean`
   注解在需要导入导出的bean上（必须），参数有导入类型和导出类型两种（XLSX,XLS）
 * `ExcelField`
-  注解在bean的字段上（非getter），参数有index（导出使用，顺序），colunmName（对应excel表头值）
+  注解在bean的字段上，或getter方法上，参数有index（导出使用，顺序），colunmName（对应excel表头值）
+  datePattern日期格式，及isGetter，标识是否是getter
 * `ExcelNestedBean`
   注解在嵌套bean上，用于支持复合表头
 * `EJValidationMessageKey`
@@ -32,4 +33,8 @@
 
 ## 关于
 项目创建人： [悟达](mailto:450783043@qq.com)
+
 作者：[悟达](mailto:450783043@qq.com)
+
+本人JAVA群：495612396
+<a target="_blank" href="http://shang.qq.com/wpa/qunwpa?idkey=8991214ab22c93e8927a95289d03292f3bd3ce4105efc1a02e12deffdb0cd3f5"><img border="0" src="http://pub.idqqimg.com/wpa/images/group.png" alt="Java一步一脚印" title="Java一步一脚印"></a>

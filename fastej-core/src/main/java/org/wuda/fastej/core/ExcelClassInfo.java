@@ -55,6 +55,7 @@ public class ExcelClassInfo {
      *
      * @param rawClass   the raw class
      * @param columnInfo the column info
+     * @param fieldInfo  the field info
      * @param inputType  the input type
      * @param outputType the output type
      */
@@ -68,6 +69,13 @@ public class ExcelClassInfo {
         this.outputType = outputType;
     }
 
+    /**
+     * Gets field info.
+     *
+     * @return the field info
+     * @author :<a href="mailto:450783043@qq.com">悟达</a>
+     * @date :2016-09-06 16:42:38
+     */
     public Map<String, ExcelBaseFieldInfo> getFieldInfo() {
         return fieldInfo == null ? null : Collections.unmodifiableMap(fieldInfo);
     }
@@ -192,15 +200,19 @@ public class ExcelClassInfo {
         if(CollectionUtils.isEmpty(originMap)) {
             return originMap;
         }
-        TreeMap<String, ExcelBaseFieldInfo> sortedMap = new TreeMap<String, ExcelBaseFieldInfo>(originMap);
+        LinkedHashMap<String, ExcelBaseFieldInfo> sortedMap = new LinkedHashMap<String, ExcelBaseFieldInfo>();
         List<Map.Entry<String, ExcelBaseFieldInfo>> entryList = new ArrayList<Map.Entry<String, ExcelBaseFieldInfo>>
-                (sortedMap.entrySet());
+                (originMap.entrySet());
 
         Collections.sort(entryList, new Comparator<Map.Entry<String, ExcelBaseFieldInfo>>() {
             public int compare(Map.Entry<String, ExcelBaseFieldInfo> o1, Map.Entry<String, ExcelBaseFieldInfo> o2) {
                 return o1.getValue().compareTo(o2.getValue());
             }
         });
+        for(Map.Entry<String, ExcelBaseFieldInfo> entry : entryList) {
+            sortedMap.put(entry.getKey(), entry.getValue());
+        }
+
         for(Iterator<Map.Entry<String, ExcelBaseFieldInfo>> iterator = sortedMap.entrySet().iterator(); iterator
                 .hasNext(); ) {
             Map.Entry<String, ExcelBaseFieldInfo> entry = iterator.next();
@@ -210,7 +222,7 @@ public class ExcelClassInfo {
             Map<String, ExcelBaseFieldInfo> sortedFieldChildMap = sortFields(oldField.getFieldNameKeyFields());
             ExcelBaseFieldInfo newField = new ExcelBaseFieldInfo(oldField.getFieldClass(), oldField.getFieldName(),
                     oldField.getColumnName(), oldField.getIndex(), sortedColumnChildMap, sortedFieldChildMap,
-                    oldField.isMixed());
+                    oldField.isMixed(), oldField.isGetter(), oldField.getDatePattern());
             entry.setValue(newField);
         }
         return sortedMap;

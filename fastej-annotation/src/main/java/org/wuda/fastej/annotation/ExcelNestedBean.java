@@ -11,7 +11,7 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
 @Documented
-@Target(ElementType.FIELD)
+@Target({ElementType.METHOD, ElementType.FIELD})
 public @interface ExcelNestedBean {
     /**
      * Index int.
@@ -31,4 +31,12 @@ public @interface ExcelNestedBean {
      */
     String columnName();
 
+    /**
+     * Is getter boolean.
+     *
+     * @return the boolean
+     * @author :<a href="mailto:450783043@qq.com">悟达</a>
+     * @date :2016-09-06 16:03:33
+     */
+    boolean isGetter() default false;
 }

@@ -23,7 +23,7 @@ public class Test20W {
      * @author :<a href="mailto:450783043@qq.com">悟达</a>
      * @date :2016-07-27 09:27:54
      */
-    @ExcelField(columnName = "主键")
+    @ExcelField(columnName = "主键", datePattern = "id")
     @Min(10)
     private int id;
     /**
@@ -32,7 +32,7 @@ public class Test20W {
      * @author :<a href="mailto:450783043@qq.com">悟达</a>
      * @date :2016-07-27 09:27:54
      */
-    @ExcelField(columnName = "编码")
+    @ExcelField(columnName = "编码", datePattern = "code")
     @Length(min = 0, max = 15)
     private String code;
     /**
@@ -41,7 +41,7 @@ public class Test20W {
      * @author :<a href="mailto:450783043@qq.com">悟达</a>
      * @date :2016-07-27 09:27:54
      */
-    @ExcelField(columnName = "编号")
+    @ExcelField(columnName = "编号", index = -1, datePattern = "num")
     private String num;
     /**
      * The Directory.
@@ -49,7 +49,7 @@ public class Test20W {
      * @author :<a href="mailto:450783043@qq.com">悟达</a>
      * @date :2016-07-27 09:27:54
      */
-    @ExcelField(columnName = "目录")
+    @ExcelField(columnName = "目录", datePattern = "directory")
     private String directory;
     /**
      * The Name.
@@ -57,7 +57,7 @@ public class Test20W {
      * @author :<a href="mailto:450783043@qq.com">悟达</a>
      * @date :2016-07-27 09:27:54
      */
-    @ExcelField(columnName = "名称")
+    @ExcelField(columnName = "名称", datePattern = "name")
     private String name;
     /**
      * The Measure.
@@ -65,7 +65,7 @@ public class Test20W {
      * @author :<a href="mailto:450783043@qq.com">悟达</a>
      * @date :2016-07-27 09:27:54
      */
-    @ExcelField(columnName = "计量")
+    @ExcelField(columnName = "计量", datePattern = "measure")
     private String measure;
     /**
      * The Art no.
@@ -73,7 +73,7 @@ public class Test20W {
      * @author :<a href="mailto:450783043@qq.com">悟达</a>
      * @date :2016-07-27 09:27:54
      */
-    @ExcelField(columnName = "货号")
+    @ExcelField(columnName = "货号", datePattern = "artNo")
     private String artNo;
     /**
      * The Flag.
@@ -81,7 +81,7 @@ public class Test20W {
      * @author :<a href="mailto:450783043@qq.com">悟达</a>
      * @date :2016-07-27 09:27:54
      */
-    @ExcelField(columnName = "标识位")
+    @ExcelField(columnName = "标识位", datePattern = "flag")
     private String flag;
     /**
      * The Store location.
@@ -89,7 +89,7 @@ public class Test20W {
      * @author :<a href="mailto:450783043@qq.com">悟达</a>
      * @date :2016-07-27 09:27:54
      */
-    @ExcelField(columnName = "库位")
+    @ExcelField(columnName = "库位", datePattern = "storeLocation")
     private String storeLocation;
     /**
      * The Create date.
@@ -97,7 +97,7 @@ public class Test20W {
      * @author :<a href="mailto:450783043@qq.com">悟达</a>
      * @date :2016-07-27 09:27:54
      */
-    @ExcelField(columnName = "创建时间")
+    @ExcelField(columnName = "创建时间", datePattern = "createDate")
     private String createDate;
     /**
      * The Primary code.
@@ -105,7 +105,7 @@ public class Test20W {
      * @author :<a href="mailto:450783043@qq.com">悟达</a>
      * @date :2016-07-27 09:27:54
      */
-    @ExcelField(columnName = "主要编码")
+    @ExcelField(columnName = "主要编码", datePattern = "primaryCode")
     private String primaryCode;
     /**
      * The Factory no.
@@ -113,7 +113,7 @@ public class Test20W {
      * @author :<a href="mailto:450783043@qq.com">悟达</a>
      * @date :2016-07-27 09:27:54
      */
-    @ExcelField(columnName = "厂家编号")
+    @ExcelField(columnName = "厂家编号", datePattern = "factoryNo")
     private String factoryNo;
     /**
      * The Unit.
@@ -121,7 +121,7 @@ public class Test20W {
      * @author :<a href="mailto:450783043@qq.com">悟达</a>
      * @date :2016-07-27 09:27:54
      */
-    @ExcelField(columnName = "单位")
+    @ExcelField(columnName = "单位", datePattern = "unit")
     private String unit;
 
     /**
@@ -375,6 +375,11 @@ public class Test20W {
      */
     public String getUnit() {
         return unit;
+    }
+
+    @ExcelField(columnName = "自定义Getter", isGetter = true, index = 1)
+    public String getCustomName() {
+        return "你好";
     }
 
     /**

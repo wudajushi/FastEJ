@@ -1,8 +1,9 @@
 package org.wuda.fastej.test;
 
+import org.wuda.fastej.Excel;
 import junit.framework.TestCase;
 import org.apache.poi.ss.usermodel.Workbook;
-import org.wuda.fastej.Excel;
+import org.wuda.fastej.test.RandomValue;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -12,10 +13,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 测试excel的生成器
+ * The type Test excel data generator.
  *
  * @author :<a href="mailto:450783043@qq.com">悟达</a>
- * @date :2016-09-05 18:24:45
+ * @date :2016-09-06 16:34:08
  */
 public class TestExcelDataGenerator extends TestCase {
 
@@ -23,27 +24,28 @@ public class TestExcelDataGenerator extends TestCase {
      * Test generate.
      *
      * @throws IllegalAccessException the illegal access exception
+     * @throws IOException            the io exception
      * @author :<a href="mailto:450783043@qq.com">悟达</a>
-     * @date :2016-09-05 18:24:45
+     * @date :2016-09-06 16:34:08
      */
     public void testGenerate() throws IllegalAccessException, IOException {
 //        System.out.println(gen(Test20W.class, 10));
-        Workbook workbook = Excel.fromJavaBean(gen(Test20W.class, 5000), Test20W.class);
+        Workbook workbook = Excel.fromJavaBean(gen(org.wuda.fastej.test.Test20W.class, 5000), org.wuda.fastej.test.Test20W.class);
         workbook.write(new FileOutputStream("D:\\5000.xlsx"));
 
-        workbook = Excel.fromJavaBean(gen(Test20W.class, 10000), Test20W.class);
+        workbook = Excel.fromJavaBean(gen(org.wuda.fastej.test.Test20W.class, 10000), org.wuda.fastej.test.Test20W.class);
         workbook.write(new FileOutputStream("D:\\1W.xlsx"));
 
-        workbook = Excel.fromJavaBean(gen(Test20W.class, 20000), Test20W.class);
+        workbook = Excel.fromJavaBean(gen(org.wuda.fastej.test.Test20W.class, 20000), org.wuda.fastej.test.Test20W.class);
         workbook.write(new FileOutputStream("D:\\2W.xlsx"));
 
-        workbook = Excel.fromJavaBean(gen(Test20W.class, 50000), Test20W.class);
+        workbook = Excel.fromJavaBean(gen(org.wuda.fastej.test.Test20W.class, 50000), org.wuda.fastej.test.Test20W.class);
         workbook.write(new FileOutputStream("D:\\5W.xlsx"));
 
-        workbook = Excel.fromJavaBean(gen(Test20W.class, 100000), Test20W.class);
+        workbook = Excel.fromJavaBean(gen(org.wuda.fastej.test.Test20W.class, 100000), org.wuda.fastej.test.Test20W.class);
         workbook.write(new FileOutputStream("D:\\10W.xlsx"));
 
-        workbook = Excel.fromJavaBean(gen(Test20W.class, 200000), Test20W.class);
+        workbook = Excel.fromJavaBean(gen(org.wuda.fastej.test.Test20W.class, 200000), org.wuda.fastej.test.Test20W.class);
         workbook.write(new FileOutputStream("D:\\20W.xlsx"));
     }
 
@@ -56,7 +58,7 @@ public class TestExcelDataGenerator extends TestCase {
      * @return the list
      * @throws IllegalAccessException the illegal access exception
      * @author :<a href="mailto:450783043@qq.com">悟达</a>
-     * @date :2016-09-05 18:24:45
+     * @date :2016-09-06 16:34:08
      */
     public static <T> List<T> gen(Class<T> beanClass, int size) throws IllegalAccessException {
         if(beanClass == null || size <= 0) {
@@ -85,7 +87,7 @@ public class TestExcelDataGenerator extends TestCase {
      *
      * @return the random string
      * @author :<a href="mailto:450783043@qq.com">悟达</a>
-     * @date :2016-09-05 18:24:45
+     * @date :2016-09-06 16:34:08
      */
     public static String getRandomString() {
         int num = RandomValue.getNum(0, 3);
@@ -109,7 +111,7 @@ public class TestExcelDataGenerator extends TestCase {
      * @param beanClass the bean class
      * @return the t
      * @author :<a href="mailto:450783043@qq.com">悟达</a>
-     * @date :2016-09-05 18:24:45
+     * @date :2016-09-06 16:34:08
      */
     public static <T> T instantiateClass(Class<T> beanClass) {
         if(beanClass == null) {
@@ -130,7 +132,7 @@ public class TestExcelDataGenerator extends TestCase {
      * @param beanClass the bean class
      * @return the list
      * @author :<a href="mailto:450783043@qq.com">悟达</a>
-     * @date :2016-09-05 18:24:45
+     * @date :2016-09-06 16:34:08
      */
     public static List<Field> findAllDeclaredFields(Class<?> beanClass) {
         List<Field> fields = new ArrayList<Field>();
